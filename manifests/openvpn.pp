@@ -23,6 +23,7 @@ class virtual::openvpn::host_base inherits virtual::openvpn::base {
 }
 
 define virtual::openvpn::host() {
+	include openvpn::stopped
 	include virtual::openvpn::host_base
 	exec { "mktun for ${name}":
 		command => "./MAKEDEV tun",
