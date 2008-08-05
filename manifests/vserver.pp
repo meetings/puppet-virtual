@@ -173,7 +173,7 @@ define vs_interface($prefix = 24, $dev = '') {
 			}
 		}
 		default: {
-			config_file { "/etc/vservers/local-interfaces/${name}/dev": content => $dev, }
+			config_file { "/etc/vservers/local-interfaces/${name}/dev": content => "${dev}\n", }
 			file { "/etc/vservers/local-interfaces/${name}/nodev": ensure => absent, }
 		}
 	}
