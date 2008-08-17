@@ -2,9 +2,10 @@
 
 NAME=$1
 CONTEXT=$2
+DIST=${3:-etch}
 
 # create basic vserver
-vserver $NAME build -m debootstrap -- -d etch -m http://ftp.at.debian.org/debian
+vserver $NAME build -m debootstrap -- -d $DIST -m http://ftp.at.debian.org/debian
 
 # default settings
 echo $NAME >/etc/vservers/$NAME/uts/nodename
@@ -13,7 +14,7 @@ echo $CONTEXT >/etc/vservers/$NAME/context
 # copy in some some defaults
 TARGET=/etc/vservers/$NAME/vdir/
 
-cp /etc/apt/{preferences,sources.list} $TARGET/etc/apt/
+cp -av /var/lib/puppet/modules/virtual/build_vserver/skel_$DIST/* $TARGET/etc/
 
 # this is needed so puppet can find the puppetmaster and creates the right
 # certificate
@@ -24,7 +25,10 @@ cp /var/lib/puppet/modules/dbp/puppet_current.deb $TARGET/var/lib/puppet/modules
 
 # Setup is complete, now do the post-install stuff
 vserver $NAME start
-vserver $NAME exec dselect update
+# refresh apt's knowledge of repositories, needed especially for repo signing
+vserver $NAME exec apt-get update
+# best install security updates first, before anything else
+vserver $NAME exec apt-get -uy dist-upgrade
 # install a few packages needed for facter
 vserver $NAME exec apt-get -y install lsb-release iproute
 vserver $NAME exec dpkg --install var/lib/puppet/modules/dbp/puppet_current.deb

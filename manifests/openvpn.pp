@@ -25,9 +25,15 @@ class virtual::openvpn::host_base inherits virtual::openvpn::base {
 define virtual::openvpn::host() {
 	include openvpn::stopped
 	include virtual::openvpn::host_base
+
+	file {
+		"/etc/vservers/${name}/vdir/dev/net":
+			ensure => directory,
+			mode => 0755, owner => root, group => root;
+	}
+
 	exec { "mktun for ${name}":
-		command => "./MAKEDEV tun",
-		cwd => "/etc/vservers/${name}/vdir/dev",
+		command => "mknod -m 666 /etc/vservers/${name}/vdir/dev/net/tun c 10 200", 
 		creates => "/etc/vservers/${name}/vdir/dev/net/tun";
 	}
 }
