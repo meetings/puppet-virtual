@@ -49,7 +49,7 @@ define vs_create($in_domain, $context, $legacy = false) {
 		
 
 # ensure: present, stopped, running
-define vserver($ensure, $context, $in_domain = '', $mark = '', $legacy = false) {
+define vserver($ensure, $context, $in_domain = '', $mark = '', $legacy = false, $additional_mounts = '') {
 	case $in_domain { '': {} 
 		default: { err("${fqdn}: vserver ${name} uses deprecated \$in_domain" ) }
 	}
@@ -79,7 +79,12 @@ define vserver($ensure, $context, $in_domain = '', $mark = '', $legacy = false) 
 			mode => 0755, owner => root, group => root;
 	}
 
+	$default_mounts = template("virtual/vserver_fstab")
 	config_file {
+		"/etc/vservers/${vs_name}/fstab":
+			content => "${default_mounts}${additional_mounts}\n",
+			notify => Exec["vs_restart_${vs_name}"],
+			require => Exec["vs_create_${vs_name}"];
 		"/etc/vservers/${vs_name}/context":
 			content => "${context}\n",
 			notify => Exec["vs_restart_${vs_name}"],
