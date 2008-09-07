@@ -21,8 +21,32 @@ class vserver::host {
 		"/etc/cron.daily/vserver-hashify":
 			source => "puppet://$servername/virtual/hashify.cron.daily",
 			mode => 0755, owner => root, group => root;
+		"/var/lib/vservers/.hash":
+			ensure => directory,
+			mode => 0700, owner => root, group => root,
+			require => Package["util-vserver"];
+		"/etc/vservers/.defaults/apps/vunify/hash/root":
+			ensure => link,
+			target => "/var/lib/vservers/.hash",
+			owner => root, group => root,
+			require => Package["util-vserver"];
 	}
-	
+
+	# linux-image-2.6.18-6-vserver-amd64 2.6.18.dfsg.1-22etch2 doesn't have COWBL enabled
+	# therefore hashifying all vservers is a very bad idea
+	case $operatingsystem {
+		Debian,debian: {
+			case $debianversion {
+				etch: {
+					case $architecture {
+						amd64: {
+							File["/etc/cron.daily/vserver-hashify"]{ ensure => absent }
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 define vs_create($in_domain, $context, $legacy = false) { 
