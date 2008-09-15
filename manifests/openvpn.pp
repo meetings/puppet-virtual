@@ -34,7 +34,8 @@ define virtual::openvpn::host() {
 
 	exec { "mktun for ${name}":
 		command => "mknod -m 666 /etc/vservers/${name}/vdir/dev/net/tun c 10 200", 
-		creates => "/etc/vservers/${name}/vdir/dev/net/tun";
+		creates => "/etc/vservers/${name}/vdir/dev/net/tun",
+		require => File["/etc/vservers/${name}/vdir/dev/net"];
 	}
 }
 
@@ -56,6 +57,7 @@ define virtual::openvpn::server($config) {
 		"/etc/openvpn/${name}.conf":
 			ensure => present, content => $config,
 			mode => 0644, owner => root, group => 0,
+			require => Package["openvpn"],
 			notify => Service['openvpn'];
 	}
 }

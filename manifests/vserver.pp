@@ -34,10 +34,11 @@ class vserver::host {
 
 	# linux-image-2.6.18-6-vserver-amd64 2.6.18.dfsg.1-22etch2 doesn't have COWBL enabled
 	# therefore hashifying all vservers is a very bad idea
+	# disabled lenny, just to be on the safe side
 	case $operatingsystem {
 		Debian,debian: {
 			case $debianversion {
-				etch: {
+				etch,lenny: {
 					case $architecture {
 						amd64: {
 							File["/etc/cron.daily/vserver-hashify"]{ ensure => absent }
@@ -86,12 +87,8 @@ define vserver($ensure, $context, $in_domain = '', $mark = '', $legacy = false, 
 	$vs_name_underscores = gsub($vs_name, '\.', '_')
 	$cron_job = "/etc/cron.daily/puppet-vserver-${vs_name_underscores}"
 
-
-	# TODO: wasn't there a syntax for using arrays as case selectors??
 	case $ensure {
-		present: { vs_create{$name: in_domain => $in_domain, context => $context, legacy => $legacy, } }
-		running: { vs_create{$name: in_domain => $in_domain, context => $context, legacy => $legacy, } }
-		stopped: { vs_create{$name: in_domain => $in_domain, context => $context, legacy => $legacy, } }
+		present,running,stopped: { vs_create{$name: in_domain => $in_domain, context => $context, legacy => $legacy, } }
 	}
 
 	file {
