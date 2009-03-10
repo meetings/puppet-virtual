@@ -34,10 +34,10 @@ class vserver::host {
 
 	# linux-image-2.6.18-6-vserver-amd64 2.6.18.dfsg.1-22etch2 doesn't have COWBL enabled
 	# therefore hashifying all vservers is a very bad idea
-	# disabled lenny, just to be on the safe side
 	case $operatingsystem {
 		Debian,debian: {
-			case $debianversion {
+			case $lsbdistcodename {
+				# disabled lenny, just to be on the safe side
 				etch,lenny: {
 					case $architecture {
 						amd64: {
