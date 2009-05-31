@@ -2,7 +2,7 @@
 # Copyright (C) 2007 David Schmitt <david@schmitt.edv-bus.at>
 # See LICENSE for the full license granted to you.
 
-modules_dir{ "virtual/contexts": }
+module_dir{ "virtual/contexts": }
 
 class vserver::host {
 
@@ -14,7 +14,7 @@ class vserver::host {
 			mode => 0755, owner => root, group => root,
 			require => [ Package['util-vserver'], Package[debootstrap],
 				# this comes from dbp module and is the most current puppet deb
-				File["/var/lib/puppet/modules/dbp/puppet_current.deb"] ];
+				File["${module_dir_path}/dbp/puppet_current.deb"] ];
 		"/etc/vservers/local-interfaces":
 			ensure => directory,
 			mode => 0755, owner => root, group => root;
@@ -112,7 +112,7 @@ define vserver($ensure, $context, $in_domain = '', $mark = '', $legacy = false, 
 			require => Exec["vs_create_${vs_name}"];
 		# create illegal configuration, when two vservers have the same context
 		# number
-		"/var/lib/puppet/modules/virtual/contexts/${context}":
+		"${module_dir_path}/virtual/contexts/${context}":
 			content => "\n";
 		"/etc/vservers/${vs_name}/uts/nodename":
 			content => "${vs_name}\n",

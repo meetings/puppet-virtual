@@ -8,15 +8,15 @@
 
 class virtual::openvpn::base {
 	include openvpn
-	modules_dir { "virtual/openvpn": }
+	module_dir { "virtual/openvpn": }
 }
 
 class virtual::openvpn::host_base inherits virtual::openvpn::base {
 	file {
-		"/var/lib/puppet/modules/virtual/openvpn/create_interface":
+		"${module_dir_path}/virtual/openvpn/create_interface":
 			source => "puppet://$servername/virtual/create_openvpn_interface",
 			mode => 0755, owner => root, group => 0;
-		"/var/lib/puppet/modules/virtual/openvpn/destroy_interface":
+		"${module_dir_path}/virtual/openvpn/destroy_interface":
 			source => "puppet://$servername/virtual/destroy_openvpn_interface",
 			mode => 0755, owner => root, group => 0;
 	}
@@ -45,8 +45,8 @@ define virtual::openvpn::interface($subnet) {
 	# this is a "bit" coarse grained but works for me
 	ifupdown::manual {
 		$name:
-			up => "/var/lib/puppet/modules/virtual/openvpn/create_interface ${name} ${subnet}",
-			down => "/var/lib/puppet/modules/virtual/openvpn/destroy_interface ${name} ${subnet}" 
+			up => "${module_dir_path}/virtual/openvpn/create_interface ${name} ${subnet}",
+			down => "${module_dir_path}/virtual/openvpn/destroy_interface ${name} ${subnet}" 
 	}
 }
 
