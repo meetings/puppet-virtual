@@ -50,7 +50,7 @@ class vserver::host {
 	}
 }
 
-define vs_create($in_domain, $context, $legacy = false) { 
+define vs_create($in_domain, $context, $legacy = false, $distribution = 'lenny') { 
 	$vs_name = $legacy ? { true => $name, false => $in_domain ? { '' => $name, default => "${name}.${in_domain}" } }
 
 	case $vs_name { '': { fail ( "Cannot create VServer with empty name" ) } }
@@ -63,7 +63,7 @@ define vs_create($in_domain, $context, $legacy = false) {
 			}
 		}
 		false: {
-			exec { "/usr/local/bin/build_vserver \"${vs_name}\" ${context}":
+			exec { "/usr/local/bin/build_vserver \"${vs_name}\" ${context} ${distribution}":
 				creates => "/etc/vservers/${vs_name}",
 				require => File["/usr/local/bin/build_vserver"],
 				alias => "vs_create_${vs_name}"
@@ -74,7 +74,7 @@ define vs_create($in_domain, $context, $legacy = false) {
 		
 
 # ensure: present, stopped, running
-define vserver($ensure, $context, $in_domain = '', $mark = '', $legacy = false, $additional_mounts = '') {
+define vserver($ensure, $context, $distribution = 'lenny', $in_domain = '', $mark = '', $legacy = false, $additional_mounts = '') {
 	case $in_domain { '': {} 
 		default: { err("${fqdn}: vserver ${name} uses deprecated \$in_domain" ) }
 	}
@@ -88,7 +88,7 @@ define vserver($ensure, $context, $in_domain = '', $mark = '', $legacy = false, 
 	$cron_job = "/etc/cron.daily/puppet-vserver-${vs_name_underscores}"
 
 	case $ensure {
-		present,running,stopped: { vs_create{$name: in_domain => $in_domain, context => $context, legacy => $legacy, } }
+		present,running,stopped: { vs_create{$name: in_domain => $in_domain, context => $context, legacy => $legacy, distribution => $distribution } }
 	}
 
 	file {

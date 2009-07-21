@@ -2,7 +2,7 @@
 
 NAME=$1
 CONTEXT=$2
-DIST=${3:-etch}
+DIST=${3:-lenny}
 
 # create basic vserver
 vserver $NAME build -m debootstrap -- -d $DIST -m http://ftp.at.debian.org/debian
