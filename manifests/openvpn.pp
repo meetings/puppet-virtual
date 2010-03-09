@@ -14,10 +14,10 @@ class virtual::openvpn::base {
 class virtual::openvpn::host_base inherits virtual::openvpn::base {
 	file {
 		"${module_dir_path}/virtual/openvpn/create_interface":
-			source => "puppet://$servername/virtual/create_openvpn_interface",
+			source => "puppet:///modules/virtual/create_openvpn_interface",
 			mode => 0755, owner => root, group => 0;
 		"${module_dir_path}/virtual/openvpn/destroy_interface":
-			source => "puppet://$servername/virtual/destroy_openvpn_interface",
+			source => "puppet:///modules/virtual/destroy_openvpn_interface",
 			mode => 0755, owner => root, group => 0;
 	}
 }
